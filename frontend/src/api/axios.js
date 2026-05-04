@@ -1,18 +1,21 @@
 import axios from 'axios'
 
+// 🔥 Direct deployed backend URL
 const api = axios.create({
-  baseURL: '',  // Vite proxy handles /api → http://localhost:8080
+  baseURL: "https://cyber-ai-lite-2.onrender.com", // 👈 YOUR LIVE BACKEND
   timeout: 30000,
 })
 
-// Attach token on every request
+// ✅ Attach token on every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('cybereye_token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
   return config
 })
 
-// Handle 401 globally
+// ✅ Handle 401 globally
 api.interceptors.response.use(
   (res) => res,
   (err) => {

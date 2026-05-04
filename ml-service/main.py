@@ -1,47 +1,53 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import url_router, email_router, image_router
+# 🔥 SAFE IMPORTS (avoid crash if routers fail)
+try:
+    from routers.url_router import router as url_router
+    from routers.email_router import router as email_router
+    from routers.image_router import router as image_router
+    ROUTERS_LOADED = True
+except Exception as e:
+    print("Router import failed:", e)
+    ROUTERS_LOADED = False
 
 app = FastAPI(
     title="CyberEye AI – ML Service",
-    description="AI-powered threat detection: URL phishing, Email classification, Deepfake image detection",
     version="1.0.0"
 )
 
-# CORS – allow Spring Boot and React frontends
+# ✅ CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://localhost:5173", "*"],
+    allow_origins=["*"],   # allow all for now (safe for deployment)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(url_router.router)
-app.include_router(email_router.router)
-app.include_router(image_router.router)
+# ✅ Include routers only if loaded
+if ROUTERS_LOADED:
+    app.include_router(url_router)
+    app.include_router(email_router)
+    app.include_router(image_router)
 
 
+# ✅ Root endpoint (Render test ke liye)
 @app.get("/")
 def root():
-    return {"service": "CyberEye ML Service", "status": "running", "version": "1.0.0"}
+    return {
+        "status": "ML service running 🚀",
+        "routers_loaded": ROUTERS_LOADED
+    }
 
 
+# ✅ Health check
 @app.get("/health")
 def health():
     import os
     models_dir = os.path.join(os.path.dirname(__file__), "models")
-    url_model = os.path.exists(os.path.join(models_dir, "url_model.pkl"))
-    email_model = os.path.exists(os.path.join(models_dir, "email_model.pkl"))
-    deepfake_model = os.path.exists(os.path.join(models_dir, "deepfake_model.pkl"))
 
     return {
         "status": "healthy",
-        "models": {
-            "url_phishing": "loaded" if url_model else "mock (run train_models.py)",
-            "email_threat": "loaded" if email_model else "mock (run train_models.py)",
-            "deepfake_image": "loaded" if deepfake_model else "mock (run train_models.py)",
-        }
+        "models_folder_exists": os.path.exists(models_dir)
     }

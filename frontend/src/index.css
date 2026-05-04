@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    @apply bg-cyber-bg font-inter text-white;
+    background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    min-height: 100vh;
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0d1b2e; }
+  ::-webkit-scrollbar-thumb { background: #00d4ff33; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #00d4ff66; }
+}
+
+@layer components {
+  .cyber-card {
+    @apply bg-cyber-card border border-cyber-border rounded-xl
+           backdrop-blur-sm relative overflow-hidden;
+    background: linear-gradient(135deg, rgba(13,27,46,0.9) 0%, rgba(5,11,24,0.95) 100%);
+  }
+  .cyber-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.2), transparent, rgba(124,58,237,0.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .cyber-btn {
+    @apply px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200
+           flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .cyber-btn-primary {
+    @apply cyber-btn bg-cyber-cyan text-cyber-bg hover:shadow-lg;
+    box-shadow: 0 0 15px rgba(0,212,255,0.3);
+  }
+  .cyber-btn-primary:hover { box-shadow: 0 0 25px rgba(0,212,255,0.5); }
+  .cyber-btn-danger {
+    @apply cyber-btn bg-cyber-red text-white hover:shadow-lg;
+    box-shadow: 0 0 15px rgba(255,0,60,0.3);
+  }
+  .cyber-btn-outline {
+    @apply cyber-btn border border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan hover:text-cyber-bg;
+  }
+  .cyber-input {
+    @apply w-full bg-cyber-bg border border-cyber-border rounded-lg px-4 py-3
+           text-white placeholder-cyber-gray focus:outline-none focus:border-cyber-cyan
+           transition-colors duration-200;
+  }
+  .neon-text { text-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
+  .threat-safe   { @apply text-cyber-green; }
+  .threat-suspicious { @apply text-cyber-amber; }
+  .threat-malicious  { @apply text-cyber-red; }
+  .badge-safe      { @apply bg-cyber-green/20 text-cyber-green border border-cyber-green/30 px-2 py-0.5 rounded text-xs font-semibold; }
+  .badge-suspicious{ @apply bg-cyber-amber/20 text-cyber-amber border border-cyber-amber/30 px-2 py-0.5 rounded text-xs font-semibold; }
+  .badge-malicious { @apply bg-cyber-red/20 text-cyber-red border border-cyber-red/30 px-2 py-0.5 rounded text-xs font-semibold; }
+}
+
+/* Scan beam animation */
+.scan-beam {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+  animation: scanBeam 2s linear infinite;
+  opacity: 0.7;
+}
+@keyframes scanBeam {
+  0%   { top: 0%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Particle dots */
+.particle {
+  position: fixed;
+  border-radius: 50%;
+  background: #00d4ff;
+  opacity: 0.15;
+  animation: drift linear infinite;
+}
+@keyframes drift {
+  from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.15; }
+  90%  { opacity: 0.15; }
+  to   { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}

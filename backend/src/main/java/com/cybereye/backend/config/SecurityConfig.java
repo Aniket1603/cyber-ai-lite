@@ -1,3 +1,5 @@
+package com.cybereye.backend.config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,37 +18,44 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors() // ✅ VERY IMPORTANT
-            .and()
-            .csrf().disable()
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // login/register allow
-                .anyRequest().authenticated()
-            );
+                .cors().and() // 🔥 enable CORS
+                .csrf().disable()
+                .authorizeHttpRequests(auth -> auth
+
+                        // 🔥 VERY IMPORTANT (fix preflight)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 🔥 public APIs
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // 🔒 बाकी secure
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }
 
-    // 🔥 CORS CONFIG (MAIN FIX)
+    // 🔥 GLOBAL CORS CONFIG
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList(
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
                 "http://localhost:5174",
                 "https://cyber-ai-lite.vercel.app"
         ));
 
-        configuration.setAllowedMethods(Arrays.asList(
+        config.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS"
         ));
 
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", config);
 
         return source;
     }

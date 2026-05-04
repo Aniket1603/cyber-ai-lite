@@ -1,13 +1,6 @@
-# Python
-venv/
-__pycache__/
-*.pyc
-
-# Node
+ml-service/venv/
+frontend/dist/
 node_modules/
-
-# Java
 target/
-
-# Env
-.env
+__pycache__/
+*.log

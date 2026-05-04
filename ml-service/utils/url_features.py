@@ -10,6 +10,10 @@ def extract_url_features(url: str) -> list:
     """
     features = []
 
+    # Ensure URL has a scheme for urlparse
+    if not re.match(r'^[a-zA-Z]+://', url):
+        url = "http://" + url
+
     parsed = urlparse(url)
     hostname = parsed.hostname or ""
     path = parsed.path or ""

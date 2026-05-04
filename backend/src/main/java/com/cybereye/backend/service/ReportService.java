@@ -39,9 +39,9 @@ public class ReportService {
             long total = scanResultRepository.count();
             stats.put("totalScans", total);
             stats.put("totalThreats", scanResultRepository.countAllThreats());
-            stats.put("urlScans",   countAllByType(ScanType.URL));
-            stats.put("emailScans", countAllByType(ScanType.EMAIL));
-            stats.put("imageScans", countAllByType(ScanType.IMAGE));
+            stats.put("urlScans",   scanResultRepository.countByScanType(ScanType.URL));
+            stats.put("emailScans", scanResultRepository.countByScanType(ScanType.EMAIL));
+            stats.put("imageScans", scanResultRepository.countByScanType(ScanType.IMAGE));
         } else {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -54,11 +54,6 @@ public class ReportService {
             stats.put("safeScans", scanResultRepository.countByUserIdAndThreatLevel(uid, ThreatLevel.SAFE));
         }
         return stats;
-    }
-
-    private long countAllByType(ScanType type) {
-        return scanResultRepository.findAllByOrderByCreatedAtDesc().stream()
-                .filter(s -> s.getScanType() == type).count();
     }
 
     private ScanResponse toResponse(ScanResult r) {

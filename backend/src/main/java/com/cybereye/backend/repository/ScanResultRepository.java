@@ -21,6 +21,8 @@ public interface ScanResultRepository extends JpaRepository<ScanResult, Long> {
 
     long countByUserIdAndScanType(Long userId, ScanType scanType);
 
+    long countByScanType(ScanType scanType);
+
     @Query("SELECT COUNT(s) FROM ScanResult s WHERE s.threatLevel != 'SAFE'")
     long countAllThreats();
 

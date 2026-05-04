@@ -2,7 +2,8 @@ import axios from 'axios'
 
 // 🔥 Direct deployed backend URL
 const api = axios.create({
-  baseURL: "https://cyber-ai-lite-2.onrender.com", // 👈 YOUR LIVE BACKEND
+  // Use environment variable VITE_API_BASE_URL if available, otherwise fallback to local
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
   timeout: 30000,
 })
 

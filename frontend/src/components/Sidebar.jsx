@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   LayoutDashboard, Link2, Mail, Image, FileText,
-  Shield, LogOut, User, ChevronRight
+  Shield, LogOut, User, ChevronRight, Activity
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import api from '../api/axios'
 
 const navItems = [
   { to: '/dashboard',  icon: LayoutDashboard, label: 'Dashboard' },
@@ -18,6 +19,21 @@ const navItems = [
 export default function Sidebar() {
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
+  const [health, setHealth] = useState({ backend: 'checking', mlService: 'checking' })
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const res = await api.get('/api/health')
+        setHealth(res.data)
+      } catch (err) {
+        setHealth({ backend: 'DOWN', mlService: 'DOWN' })
+      }
+    }
+    checkHealth()
+    const interval = setInterval(checkHealth, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <aside className="w-64 min-h-screen bg-cyber-card border-r border-cyber-border flex flex-col">
@@ -56,6 +72,33 @@ export default function Sidebar() {
           )
         })}
       </nav>
+
+      {/* Service Health */}
+      <div className="px-6 py-4 border-t border-cyber-border/50">
+        <p className="text-[10px] text-cyber-gray uppercase tracking-widest mb-3 flex items-center gap-2">
+          <Activity className="w-3 h-3" /> Service Status
+        </p>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-cyber-gray">Backend</span>
+            <div className="flex items-center gap-1.5">
+              <div className={`w-1.5 h-1.5 rounded-full ${health.backend === 'UP' ? 'bg-cyber-green' : 'bg-cyber-red'} animate-pulse`} />
+              <span className={`text-[10px] font-mono ${health.backend === 'UP' ? 'text-cyber-green' : 'text-cyber-red'}`}>
+                {health.backend}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-cyber-gray">ML Service</span>
+            <div className="flex items-center gap-1.5">
+              <div className={`w-1.5 h-1.5 rounded-full ${health.mlService === 'UP' ? 'bg-cyber-green' : 'bg-cyber-red'} animate-pulse`} />
+              <span className={`text-[10px] font-mono ${health.mlService === 'UP' ? 'text-cyber-green' : 'text-cyber-red'}`}>
+                {health.mlService}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* User info */}
       <div className="p-4 border-t border-cyber-border">

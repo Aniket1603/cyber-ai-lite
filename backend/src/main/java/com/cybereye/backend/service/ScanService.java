@@ -52,11 +52,10 @@ public class ScanService {
             threatLevel = ThreatLevel.SAFE;
         }
 
-        // Serialize details
-        Map<String, Object> features = (Map<String, Object>) mlResult.getOrDefault("features", new HashMap<>());
+        // Serialize all ML metadata (features, analysis, model, etc.)
         String detailsJson;
         try {
-            detailsJson = objectMapper.writeValueAsString(features);
+            detailsJson = objectMapper.writeValueAsString(mlResult);
         } catch (Exception e) {
             detailsJson = "{}";
         }
